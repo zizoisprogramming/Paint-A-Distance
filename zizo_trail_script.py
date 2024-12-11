@@ -4,7 +4,7 @@ import cv2
 import matplotlib.pyplot as plt
 from skimage.morphology import skeletonize, thin
 from skimage.io import imshow
-face_cascade = cv2.CascadeClassifier('/home/zizo/Downloads/haarcascade_frontalface_default.xml')
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 def RGBtoYCbCr (R, G, B):
     R = int(R)
