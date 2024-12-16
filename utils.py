@@ -501,7 +501,7 @@ def detect_fingertips_gray(hand_mask, skeleton, threshold=150, debug=False):
 
     # Endpoints are where the result equals 20
     fingertip_coords = np.argwhere(convolved == 11)
-    print(np.unique(convolved))
+    # print(np.unique(convolved))
 
     # Convert to (x, y) format for OpenCV compatibility
     fingertips = [(y, x) for x, y in fingertip_coords]
@@ -511,5 +511,6 @@ def detect_fingertips_gray(hand_mask, skeleton, threshold=150, debug=False):
 
     # Find the highest fingertip (min y value)
     highest_fingertip = min(fingertips, key=lambda p: p[1])  # (x, y) -> compare by y (height)
+    # print("finger tip",highest_fingertip)
 
     return highest_fingertip
