@@ -48,19 +48,6 @@ skinCov = cov[1]
 nonSkinMean = mean[2]
 nonSkinCov = cov[2]
 
-# def prob_c_label(C, mean, cov):
-
-#     C = np.array(C)
-#     mean = np.array(mean)
-#     cov = np.array(cov)
-
-#     C_diff = C - mean
-#     inv_cov = np.linalg.inv(cov)    
-#     prob = np.exp(-0.5 * np.sum(C_diff @ inv_cov * C_diff,axis=-1))
-
-#     norm_factor = np.sqrt(np.linalg.det(cov) * (2 * np.pi) ** C.shape[1])
-    
-#     return prob / norm_factor
 def prob_c_label(C, mean, cov):
     C = np.array(C)
     mean = np.array(mean)
@@ -84,6 +71,7 @@ def prob_c_label(C, mean, cov):
     prob = np.exp(log_prob)
     
     return prob
+
 def prob_skin_c(C, skinMean, skinCov, nonSkinMean, nonSkinCov):
     probCskin = prob_c_label(C, skinMean, skinCov)
     probCnonSkin = prob_c_label(C, nonSkinMean, nonSkinCov)
@@ -134,20 +122,9 @@ def appendFaceContour(frame, resizedSize, contour_areas, smallest_contours):
             if (middle_x >= min_x and middle_x <= max_x) and (middle_y >= min_y and middle_y <= max_y):
                 smallest_contours.append(contour)
                 print("face shall be removed")
-            # midpoint = (float(middle_x), float(middle_y))
-            # result = cv2.pointPolygonTest(contour, midpoint, False)
-            # dChange = 20
-            # d_x = dChange
-            # d_y = dChange
-            # different_dirs = [(d_x, d_y), (-d_x, d_y), (d_x, -d_y), (-d_x, -d_y)]
-            # for dir in different_dirs:
-            #     if result < 0:
-            #         result = cv2.pointPolygonTest(contour, (middle_x + dir[0], middle_y + dir[1]), False)
-            # if result >= 0:  
-            #     smallest_contours.append(contour)
-            #     return  
     elif len(contour_areas) > 1:
         smallest_contours.append(contour_areas[-2][1])
+
 def removeContours(mask, frame, resizedSize):
     closedMask = cv2.morphologyEx(mask, cv2.MORPH_DILATE, np.ones((20, 5)), iterations=3)
     contours = cv2.findContours(closedMask.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[0]
@@ -167,31 +144,14 @@ def removeContours(mask, frame, resizedSize):
     for x in contours[-min(2,len(contours)):]:
         cv2.drawContours(image, [x], -1, (0, 0, 255), 2)
     cv2.imshow('contours', image)
+
 def cleanMask(skinMask, frame, resizedSize):
     binaryMask = cv2.morphologyEx(skinMask, cv2.MORPH_CLOSE, np.ones((3, 3)), iterations=3)
     binaryMask = cv2.threshold(binaryMask, 0.005, 1, cv2.THRESH_BINARY)[1]
     binaryMask = cv2.morphologyEx(binaryMask, cv2.MORPH_CLOSE, np.ones((3, 3)), iterations=3)
-    # binaryMask = cv2.morphologyEx(binaryMask, cv2.MORPH_OPEN, np.ones((3, 3)), iterations=3)
     removeContours(binaryMask, frame, resizedSize)
     return binaryMask
-def show_images(images,titles=None):
-    #This function is used to show image(s) with titles by sending an array of images and an array of associated titles.
-    # images[0] will be drawn with the title titles[0] if exists
-    # You aren't required to understand this function, use it as-is.
-    n_ims = len(images)
-    if titles is None: titles = ['(%d)' % i for i in range(1,n_ims + 1)]
-    fig = plt.figure()
-    n = 1
-    for image,title in zip(images,titles):
-        a = fig.add_subplot(1,n_ims,n)
-        if image.ndim == 2:
-            plt.gray()
-        plt.imshow(image)
-        a.set_title(title)
-        plt.axis('off')
-        n += 1
-    fig.set_size_inches(np.array(fig.get_size_inches()) * n_ims)
-    plt.show()
+
 def removeFaceMask(image, face_cascade):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
@@ -210,6 +170,7 @@ def removeFaceMask(image, face_cascade):
         mask[circular_mask] = 0
     
     return mask
+
 drawing_color = (0, 0, 255)
 
 color_squares = {
@@ -271,8 +232,7 @@ def main():
                 C = YCC[:, :, 1:]
 
                 skinMask = prob_skin_c(C, skinMean, skinCov, nonSkinMean, nonSkinCov)
-                cv2.imshow('Skin Mask before cleaning wiz threshold',  cv2.threshold(skinMask, 0.75, 1, cv2.THRESH_BINARY)[1]
-)
+                cv2.imshow('Skin Mask before cleaning wiz threshold',  cv2.threshold(skinMask, 0.75, 1, cv2.THRESH_BINARY)[1])
 
                 hand_mask = cleanMask(skinMask, original, resizingSize)
                 if hand_mask.dtype != np.uint8:
