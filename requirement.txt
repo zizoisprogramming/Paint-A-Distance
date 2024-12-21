@@ -1,0 +1,20 @@
+# Core Libraries
+numpy==1.26.4  # For numerical computations
+
+# Image Processing Libraries
+opencv-python==4.8.0.76  # For image processing
+opencv-contrib-python==4.10.0.84
+opencv-python==4.10.0
+opencv-python-headless==4.10.0
+cvzone==1.6.1
+matplotlib==3.9.3
+matplotlib-inline==0.1.7
+scikit-image==0.21.0     # For skeletonization and thinning
+
+# Utilities
+# Include utils package if it's a custom package, otherwise omit.
+# Uncomment the next line if utils is available via PyPI
+# utils==<version>
+
+# General
+# Add time if it's a dependency for another library, though it's built into Python
